@@ -26,9 +26,8 @@ public class DrawView extends SurfaceView implements Runnable{ //Maybe have leav
     private Point[] points;
     private int height;
     private int width;
-    private int delay = 3;
+    private int delay = 2;
     private int count;
-    private ArrayList<Leaf> leaves;
     Paint pathPaint;
     private boolean mRunning;
     private Thread mGameThread = null;
@@ -53,7 +52,6 @@ public class DrawView extends SurfaceView implements Runnable{ //Maybe have leav
 //        pathPaint.setColor(Color.rgb(240,222,192));
         path = new Path();
         count = 0;
-        leaves = new ArrayList<Leaf>();
 
     }
 
@@ -68,55 +66,20 @@ public class DrawView extends SurfaceView implements Runnable{ //Maybe have leav
         }
         canvas.drawPath(path,pathPaint);
         if (count >= delay) {
-            Leaf leaf4 = tree4.update();
-            Leaf leaf3 = tree3.update();
-            Leaf leaf2 = tree2.update();
-            Leaf leaf1 = tree1.update();
+            tree4.update();
+            tree3.update();
+            tree2.update();
+            tree1.update();
             count = 0;
-            if (leaf4 != null) {
-                leaves.add(leaf4);
-                if (leaves.size() > 400) {
-                    leaves.remove(0);
-                }
-            }
-            if (leaf3 != null) {
-                leaves.add(leaf3);
-                if (leaves.size() > 400) {
-                    leaves.remove(0);
-                }
-            }
-            if (leaf2 != null) {
-                leaves.add(leaf2);
-                if (leaves.size() > 400) {
-                    leaves.remove(0);
-                }
-            }
-            if (leaf1 != null) {
-                leaves.add(leaf1);
-                if (leaves.size() > 400) {
-                    leaves.remove(0);
-                }
-            }
         }
-
-        for (int i = 0;i<leaves.size();i++) {
-            Leaf leaf = leaves.get(i);
-            boolean intersect = false;
-            for (int j = 0;j< leaves.size();j++) {
-                if (intersect == true && i != j && leaf.onTop(leaves.get(j))) {
-                    break;
-                }
-                else if (i != j && leaf.onTop(leaves.get(j))) {
-                    intersect = true;
-                }
-            }
-            leaf.update(intersect);
-            leaf.draw(canvas);
-        }
-        tree4.drawTree(canvas);
-        tree3.drawTree(canvas);
-        tree2.drawTree(canvas);
-        tree1.drawTree(canvas);
+        tree4.updateLeaves();
+        tree3.updateLeaves();
+        tree2.updateLeaves();
+        tree1.updateLeaves();
+        tree4.draw(canvas);
+        tree3.draw(canvas);
+        tree2.draw(canvas);
+        tree1.draw(canvas);
         count++;
 //        invalidate();
     }

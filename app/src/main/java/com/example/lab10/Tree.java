@@ -20,7 +20,8 @@ public class Tree {
     private int[] colors;
     private Paint[] paints;
     private ArrayList<Integer> notChanged;
-    private int size = 75;
+    private int size = 100;
+    private ArrayList<Leaf> leaves;
     public Tree(int l, int t, int w, int h, int minLeafRadius, int treeRadius) {
         radii = new float[size];
         colorSelection = new int[size];
@@ -47,9 +48,10 @@ public class Tree {
         }
         bark.setColor(Color.rgb(97, 59, 22));
         Collections.shuffle(notChanged);
+        leaves = new ArrayList<Leaf>();
     }
 
-    public Leaf update() {
+    public void update() {
         if (notChanged.isEmpty()) {
             for (int i = 0;i<radii.length;i++) {
                 notChanged.add(i);
@@ -58,12 +60,15 @@ public class Tree {
         }
         int iChange = notChanged.remove(0);
         colorSelection[iChange] = (colorSelection[iChange]+1)%colors.length;
-
         if (colorSelection[iChange] == 3 || colorSelection[iChange] == 1) { //winter or spring, make a leaf that will fall
             Leaf leaf = new Leaf(x[iChange]-radii[iChange],y[iChange]-radii[iChange],x[iChange]+radii[iChange],
                     y[iChange]+radii[iChange], 0,5,paints[iChange].getColor(),top+height);
             paints[iChange].setColor(colors[colorSelection[iChange]]);
-            return leaf;
+            leaves.add(leaf);
+            if (leaves.size()>size*4/3) {
+                Leaf tempLeaf = leaves.remove(0);
+                tempLeaf = null;
+            }
         } else if (colorSelection[iChange] == 2) { //Fall, make different colors
             double ran = Math.random();
             if (ran <= 0.33) {
@@ -76,14 +81,30 @@ public class Tree {
         }else {
             paints[iChange].setColor(colors[colorSelection[iChange]]);
         }
-        return null;
-
-
     }
-    public void drawTree(Canvas canvas) {
+    public void updateLeaves() {
+        for (int i = 0;i<leaves.size();i++) {
+            Leaf leaf = leaves.get(i);
+            boolean intersect = false;
+            for (int j = 0;j< leaves.size();j++) {
+                if (intersect == true && i != j && leaf.onTop(leaves.get(j))) {
+                    break;
+                }
+                else if (i != j && leaf.onTop(leaves.get(j))) {
+                    intersect = true;
+                }
+            }
+            leaf.update(intersect);
+        }
+    }
+    public void draw(Canvas canvas) {
         canvas.drawRect(left,top,left+width,top+height,bark);
+        for (Leaf leaf:leaves) {
+            leaf.draw(canvas);
+        }
         for (int i = 0;i<radii.length;i++) {
             canvas.drawCircle(x[i],y[i],radii[i],paints[i]);
         }
+
     }
 }

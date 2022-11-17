@@ -44,7 +44,7 @@ public class Leaf extends RectF {
         canvas.drawCircle(centerX(),centerY(),width()/2,paint);
     }
     public boolean onTop(Leaf leaf) {
-        double dis = Math.sqrt(Math.pow(centerX()-leaf.centerX(),2) + Math.pow(centerY()-leaf.centerY(),2)*4);
+        double dis = Math.sqrt(Math.pow(centerX()-leaf.centerX(),2)*2 + Math.pow(centerY()-leaf.centerY(),2)*6);
         if (centerY() < leaf.centerY() && (dis < Math.abs(width()/2 -leaf.width()/2) || dis < width()/2 + leaf.width()/2)) {
             if (centerX() >= leaf.centerX()) {
                 if (dx == -3) {
